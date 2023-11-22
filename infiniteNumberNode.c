@@ -1,62 +1,71 @@
-void NumberList_push(NumberList* nl, int val, NumberNode* now) {
+#include "infiniteNumberNode.h"
+
+#include "infiniteNumberOperation.h"
+void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     now->number = val;
-    nl->tail->next = now;
-    now->prev = nl->tail;
-    nl->tail = now;
+    nln->value->tail->next = now;
+    now->prev = nln->value->tail;
+    nln->value->tail = now;
 }
-void queue_push(queue* Q, NumberList* now) {
+void NumberList_push_front(NumberListNode* nln, int val, NumberNode* now) {
+    now->number = val;
+    nln->value->head->prev = now;
+    now->next = nln->value->head;
+    nln->value->head = now;
+}
+NumberListNode* makeNumberListNode() {
+    NumberList* now = (NumberList*)malloc(sizeof(NumberList));
+    mallocAssert(now);
     NumberListNode* nowNode = (NumberListNode*)malloc(sizeof(NumberListNode));
     mallocAssert(nowNode);
     nowNode->value = now;
-    if (Q->qHead == NULL) {
-        Q->qHead = nowNode;
-        Q->qTail = nowNode;
+    return nowNode;
+}
+void queue_push(queue* que, NumberListNode* nowNode) {
+    if (que->qHead == NULL) {
+        que->qHead = nowNode;
+        que->qTail = nowNode;
     } else {
-        Q->qTail->next = nowNode;
-        nowNode->prev = Q->qTail;
-        Q->qTail = nowNode;
+        que->qTail->next = nowNode;
+        nowNode->prev = que->qTail;
+        que->qTail = nowNode;
     }
 }
 
-NumberList* queue_pop(queue* Q) {
-    if (Q->qHead == NULL) {
+NumberListNode* queue_pop(queue* que) {
+    if (que->qHead == NULL) {
         printf("error : empty Queue pop!!\n");
         exit(1);
     }
-    NumberList* ret = Q->qHead->value;
-    NumberListNode* temp = Q->qHead;
-    if (Q->qHead == qTail) {
+    NumberListNode* ret = que->qHead;
+    if (que->qHead == qTail) {
         qTail = NULL;
     }
-    Q->qHead = Q->qHead->next;
-    free(temp);
-    if (Q->qHead != NULL) Q->qHead->prev = NULL;
+    que->qHead = que->qHead->next;
+    if (que->qHead != NULL) que->qHead->prev = NULL;
+    ret->next = NULL;
     return ret;
 }
 
-void stack_push(stack* S, NumberList* now) {
-    NumberListNode* nowNode = (NumberListNode*)malloc(sizeof(NumberListNode));
-    mallocAssert(nowNode);
-    nowNode->value = now;
-    if (S->sTop == NULL) {
-        S->sTop = nowNode;
+void stack_push(stack* stk, NumberListNode* nowNode) {
+    if (stk->sTop == NULL) {
+        stk->sTop = nowNode;
     } else {
-        S->sTop->next = nowNode;
-        nowNode->prev = S->sTop;
-        S->sTop = nowNode;
+        stk->sTop->next = nowNode;
+        nowNode->prev = stk->sTop;
+        stk->sTop = nowNode;
     }
 }
 
-NumberList* stack_pop(stack* S) {
-    if (S->sTop == NULL) {
+NumberListNode* stack_pop(stack* stk) {
+    if (stk->sTop == NULL) {
         printf("error : empty stack pop!!\n");
         exit(1);
     }
-    NumberList* ret = S->sTop->value;
-    NumberListNode* temp = S->sTop;
-    S->sTop = S->sTop->prev;
-    free(temp);
-    if (S->sTop != NULL) S->sTop->next = NULL;
+    NumberListNode* ret = stk->sTop;
+    stk->sTop = stk->sTop->prev;
+    if (stk->sTop != NULL) stk->sTop->next = NULL;
+    ret->prev = NULL;
     return ret;
 }
 
@@ -65,4 +74,38 @@ void mallocAssert(void* p) {
         printf("error : memory exceed!!\n");
         exit(1);
     }
+}
+void NumberList_Clear(NumberList* nl) {
+    while (nl->head != NULL) {
+        NumberNode* temp = nl->head;
+        nl->head = nl->head->next;
+        free(temp);
+    }
+    free(nl);
+}
+void NumberListNode_Clear(NumberListNode* nln) {
+    NumberList_Clear(nln->value);
+    free(nln);
+}
+void stack_push_op(stack* stk, queue* que, int opInput) {
+    while (stk->sTop != NULL && (stk->sTop->value->op) != OPEN_BRACKET &&
+           (stk->sTop->value->op) / 2 >= opInput / 2) {
+        queue_push(que, stack_pop(stk));
+    }
+    NumberList* now = (NumberList*)malloc(sizeof(NumberList));
+    mallocAssert(now);
+    now->op = opInput;
+    NumberListNode* node = makeNumberListNode(now);
+    stack_push(stk, node);
+}
+
+void print_NumberListNode(NumberListNode* nln) {
+    while (nln->value->head != NULL) {
+        if (nln->value->head->number == DOT) {
+            printf(".");
+        } else {
+            printf("%d", nln->value->head->number);
+        }
+    }
+    printf("\n");
 }
