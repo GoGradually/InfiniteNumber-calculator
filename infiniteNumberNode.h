@@ -56,6 +56,12 @@ void stack_push_op(stack* S, queue* Q, int opInput);
 void mallocAssert(void* p);
 void print_NumberListNode(NumberListNode* nln);
 
+void initializeQueue(queue* q);
+void initializeStack(stack* s);
+void initializeNumberNode(NumberNode* node);
+void initializeNumberList(NumberList* list);
+void initializeNumberListNode(NumberListNode* node);
+
 void divide_by_2(NumberListNode* val);
 NumberListNode* add(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2);

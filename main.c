@@ -5,10 +5,13 @@ int main() {
     char ch;
     stack *stk = (stack *)malloc(sizeof(stack));
     queue *que = (queue *)malloc(sizeof(queue));
+    initializeQueue(que);
+    initializeStack(stk);
     int cnt = 0;
     char before = '0';
     NumberListNode *nowNumberListNode = makeNumberListNode();
-    while ((ch = getchar() != '\0')) {
+    while ((ch = (char)getchar()) != '\0') {
+        printf("%c", ch);
         if (ch == ' ' || ch == '\t' || ch == '\n') {
             continue;
         } else if (ch >= '0' && ch <= '9') {
@@ -17,14 +20,16 @@ int main() {
             }
             NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
             mallocAssert(temp);
+            initializeNumberNode(temp);
             NumberList_push_back(nowNumberListNode, (int)(ch - '0'), temp);
             cnt++;
         } else if (ch == '.') {
             NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
             mallocAssert(temp);
+            initializeNumberNode(temp);
             NumberList_push_back(nowNumberListNode, DOT, temp);
             if (nowNumberListNode->value->dot != NULL) {
-                printf("error : Invalid operator!!\n");
+                printf("error : Invalid operator!!1%c\n", ch);
                 exit(1);
             }
             nowNumberListNode->value->integerCnt = cnt;
@@ -83,14 +88,14 @@ int main() {
             while ((temp = stack_pop(stk))->value->op != OPEN_BRACKET) {
                 queue_push(que, temp);
                 if (stk->sTop == NULL) {
-                    printf("error : Invalid Operation!!\n");
+                    printf("error : Invalid Operation2!!\n");
                     exit(1);
                 }
             }
             NumberListNode_Clear(temp);
             cnt = 0;
         } else {
-            printf("error : Invalid Operator!\n");
+            printf("error : Invalid operator3!!%c\n", ch);
             exit(1);
         }
         before = ch;
@@ -106,14 +111,14 @@ int main() {
         NumberListNode *now = queue_pop(que);
         if (now->value->op == 0) {
             if (pprev != NULL) {
-                printf("error : Invalid Operator!\n");
+                printf("error : Invalid Operation4!!\n");
                 exit(1);
             }
             pprev = prev;
             prev = now;
         } else {
             if (prev == NULL || pprev == NULL) {
-                printf("error : Invalid Operator!\n");
+                printf("error : Invalid Operation5!!\n");
                 exit(1);
             }
             int op = now->value->op;
@@ -135,7 +140,7 @@ int main() {
         }
     }
     if (pprev != NULL) {
-        printf("error : Invalid Operator!\n");
+        printf("error : Invalid Operation6!!\n");
         exit(1);
     }
     print_NumberListNode(prev);

@@ -1,5 +1,28 @@
 #include "infiniteNumberNode.h"
 
+void initializeQueue(queue* q) {
+    q->qHead = NULL;
+    q->qTail = NULL;
+}
+void initializeStack(stack* s) { s->sTop = NULL; }
+void initializeNumberNode(NumberNode* node) {
+    node->number = 0;
+    node->prev = NULL;
+    node->next = NULL;
+}
+void initializeNumberList(NumberList* list) {
+    list->head = NULL;
+    list->tail = NULL;
+    list->dot = NULL;
+    list->op = 0;
+    list->integerCnt = 0;
+    list->fractionCnt = 0;
+}
+void initializeNumberListNode(NumberListNode* node) {
+    node->prev = NULL;
+    node->next = NULL;
+    node->value = NULL;
+}
 void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     now->number = val;
     nln->value->tail->next = now;
@@ -15,8 +38,10 @@ void NumberList_push_front(NumberListNode* nln, int val, NumberNode* now) {
 NumberListNode* makeNumberListNode() {
     NumberList* now = (NumberList*)malloc(sizeof(NumberList));
     mallocAssert(now);
+    initializeNumberList(now);
     NumberListNode* nowNode = (NumberListNode*)malloc(sizeof(NumberListNode));
     mallocAssert(nowNode);
+    initializeNumberListNode(nowNode);
     nowNode->value = now;
     return nowNode;
 }
@@ -93,8 +118,10 @@ void stack_push_op(stack* stk, queue* que, int opInput) {
     }
     NumberList* now = (NumberList*)malloc(sizeof(NumberList));
     mallocAssert(now);
+    initializeNumberList(now);
     now->op = opInput;
     NumberListNode* node = makeNumberListNode();
+    node->value = now;
     stack_push(stk, node);
 }
 
@@ -108,8 +135,6 @@ void print_NumberListNode(NumberListNode* nln) {
     }
     printf("\n");
 }
-
-
 
 /*
  * divide by 2
