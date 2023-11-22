@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "infiniteNumberNode.h"
-#include "infiniteNumberOperation.h"
 
 int main() {
     char ch;
@@ -29,11 +25,11 @@ int main() {
             NumberList_push_back(nowNumberListNode, DOT, temp);
             if (nowNumberListNode->value->dot != NULL) {
                 printf("error : Invalid operator!!\n");
-                exit(1)
+                exit(1);
             }
-            nowNumberListNode->integerCnt = cnt;
+            nowNumberListNode->value->integerCnt = cnt;
             cnt = 0;
-            nowNumberListNode->dot = temp;
+            nowNumberListNode->value->dot = temp;
         } else if (ch == '*' || ch == '/' || ch == '+' || ch == '-') {
             if (nowNumberListNode->value->dot == NULL) {
                 nowNumberListNode->value->integerCnt = cnt;

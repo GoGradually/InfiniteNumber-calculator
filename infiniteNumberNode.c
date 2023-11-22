@@ -1,6 +1,5 @@
 #include "infiniteNumberNode.h"
 
-#include "infiniteNumberOperation.h"
 void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     now->number = val;
     nln->value->tail->next = now;
@@ -38,8 +37,8 @@ NumberListNode* queue_pop(queue* que) {
         exit(1);
     }
     NumberListNode* ret = que->qHead;
-    if (que->qHead == qTail) {
-        qTail = NULL;
+    if (que->qHead == que->qTail) {
+        que->qTail = NULL;
     }
     que->qHead = que->qHead->next;
     if (que->qHead != NULL) que->qHead->prev = NULL;
@@ -95,7 +94,7 @@ void stack_push_op(stack* stk, queue* que, int opInput) {
     NumberList* now = (NumberList*)malloc(sizeof(NumberList));
     mallocAssert(now);
     now->op = opInput;
-    NumberListNode* node = makeNumberListNode(now);
+    NumberListNode* node = makeNumberListNode();
     stack_push(stk, node);
 }
 
@@ -108,4 +107,68 @@ void print_NumberListNode(NumberListNode* nln) {
         }
     }
     printf("\n");
+}
+
+
+
+/*
+ * divide by 2
+ * coded by 한준호
+ */
+
+void divide_by_2(NumberListNode* val) {}
+
+/*
+ * add operation
+ * The result of the calculation of val1 + val2 is stored in the
+ * NumberListNode ret, and ret is returned.
+ * coded by 김현식
+ */
+NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
+    NumberListNode* ret = makeNumberListNode();
+    /*
+     *  write the code
+     */
+    NumberListNode_Clear(val1);
+    NumberListNode_Clear(val2);
+    return ret;
+}
+/*
+ * subtract operation
+ * The result of the calculation of val1 - val2 is stored in the
+ * NumberListNode ret, and ret is returned.
+ * coded by 조신붕, 후상우
+ */
+NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
+    NumberListNode* ret = makeNumberListNode();
+    /*
+     *  write the code
+     */
+    NumberListNode_Clear(val1);
+    NumberListNode_Clear(val2);
+    return ret;
+}
+
+/*
+ * multiply operation
+ * coded by 한준호
+ */
+NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2) {
+    NumberListNode* ret = makeNumberListNode();
+
+    NumberListNode_Clear(val1);
+    NumberListNode_Clear(val2);
+    return ret;
+}
+
+/*
+ * divide operation
+ * coded by 한준호
+ */
+NumberListNode* divide(NumberListNode* val1, NumberListNode* val2) {
+    NumberListNode* ret = makeNumberListNode();
+
+    NumberListNode_Clear(val1);
+    NumberListNode_Clear(val2);
+    return ret;
 }
