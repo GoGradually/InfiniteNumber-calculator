@@ -25,15 +25,27 @@ void initializeNumberListNode(NumberListNode* node) {
 }
 void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     now->number = val;
-    nln->value->tail->next = now;
-    now->prev = nln->value->tail;
-    nln->value->tail = now;
+    if (nln->value->tail == NULL) {
+        nln->value->head = now;
+        nln->value->tail = now;
+    }  
+    else {
+        nln->value->tail->next = now;
+        now->prev = nln->value->tail;
+        nln->value->tail = now;
+    }
 }
 void NumberList_push_front(NumberListNode* nln, int val, NumberNode* now) {
     now->number = val;
-    nln->value->head->prev = now;
-    now->next = nln->value->head;
-    nln->value->head = now;
+    if (nln->value->head == NULL) {
+        nln->value->head = now;
+        nln->value->tail = now;
+    }
+    else {
+        nln->value->head->prev = now;
+        now->next = nln->value->head;
+        nln->value->head = now;
+    }
 }
 NumberListNode* makeNumberListNode() {
     NumberList* now = (NumberList*)malloc(sizeof(NumberList));

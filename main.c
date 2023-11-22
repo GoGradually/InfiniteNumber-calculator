@@ -10,8 +10,7 @@ int main() {
     int cnt = 0;
     char before = '0';
     NumberListNode *nowNumberListNode = makeNumberListNode();
-    while ((ch = (char)getchar()) != '\0') {
-        printf("%c", ch);
+    while ((ch = (char)getchar()) != EOF) {
         if (ch == ' ' || ch == '\t' || ch == '\n') {
             continue;
         } else if (ch >= '0' && ch <= '9') {
