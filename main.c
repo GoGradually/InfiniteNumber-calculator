@@ -10,7 +10,7 @@ int main() {
     int cnt = 0;
     char before = '0';
     NumberListNode *nowNumberListNode = makeNumberListNode();
-    while ((ch = (char)getchar()) != EOF) {
+    while ((ch = (char)getchar()) != '\n') {
         if (ch == ' ' || ch == '\t' || ch == '\n') {
             continue;
         } else if (ch >= '0' && ch <= '9') {
@@ -99,23 +99,28 @@ int main() {
         }
         before = ch;
     }
+
     if (nowNumberListNode->value->dot == NULL) {
         nowNumberListNode->value->integerCnt = cnt;
     } else {
         nowNumberListNode->value->fractionCnt = cnt;
     }
     queue_push(que, nowNumberListNode);
+
+    while (stk->sTop !=NULL) queue_push(que, stack_pop(stk));
+
+    stack* operand = (stack*)malloc(sizeof(stack));
+    mallocAssert(operand);
+    initializeStack(operand);
     NumberListNode *pprev = NULL, *prev = NULL;
-    while (que->qHead != que->qTail) {
+    while (que->qHead != NULL) {
         NumberListNode *now = queue_pop(que);
+        print_NumberListNode(now);
         if (now->value->op == 0) {
-            if (pprev != NULL) {
-                printf("error : Invalid Operation4!!\n");
-                exit(1);
-            }
-            pprev = prev;
-            prev = now;
+            stack_push(operand, now);
         } else {
+            prev = stack_pop(operand);
+            pprev = stack_pop(operand);
             if (prev == NULL || pprev == NULL) {
                 printf("error : Invalid Operation5!!\n");
                 exit(1);
@@ -123,16 +128,16 @@ int main() {
             int op = now->value->op;
             switch (op) {
                 case ADD:
-                    prev = add(prev, pprev);
+                    stack_push(operand, add(prev, pprev));
                     break;
                 case SUB:
-                    prev = subtract(prev, pprev);
+                    stack_push(operand, subtract(prev, pprev));
                     break;
                 case MUL:
-                    prev = multiply(prev, pprev);
+                    stack_push(operand, multiply(prev, pprev));
                     break;
                 case DIV:
-                    prev = divide(prev, pprev);
+                    stack_push(operand, divide(prev, pprev));
                     break;
             }
             pprev = NULL;

@@ -31,6 +31,10 @@ void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     }  
     else {
         nln->value->tail->next = now;
+        if (now == NULL) {
+            printf("error : NULLNumber pushed in NumberList\n");
+            exit(1);
+        }
         now->prev = nln->value->tail;
         nln->value->tail = now;
     }
@@ -43,6 +47,10 @@ void NumberList_push_front(NumberListNode* nln, int val, NumberNode* now) {
     }
     else {
         nln->value->head->prev = now;
+        if (now == NULL) {
+            printf("error : NULLNumber pushed in NumberList\n");
+            exit(1);
+        }
         now->next = nln->value->head;
         nln->value->head = now;
     }
@@ -63,6 +71,10 @@ void queue_push(queue* que, NumberListNode* nowNode) {
         que->qTail = nowNode;
     } else {
         que->qTail->next = nowNode;
+        if (nowNode == NULL) {
+            printf("error : NULLList pushed in queue\n");
+            exit(1);
+        }
         nowNode->prev = que->qTail;
         que->qTail = nowNode;
     }
@@ -88,6 +100,10 @@ void stack_push(stack* stk, NumberListNode* nowNode) {
         stk->sTop = nowNode;
     } else {
         stk->sTop->next = nowNode;
+        if (nowNode == NULL) {
+            printf("error : NULLList pushed in stack\n");
+            exit(1);
+        }
         nowNode->prev = stk->sTop;
         stk->sTop = nowNode;
     }
@@ -138,12 +154,28 @@ void stack_push_op(stack* stk, queue* que, int opInput) {
 }
 
 void print_NumberListNode(NumberListNode* nln) {
-    while (nln->value->head != NULL) {
-        if (nln->value->head->number == DOT) {
-            printf(".");
-        } else {
-            printf("%d", nln->value->head->number);
+    if (nln == NULL) {
+        printf("error : number is empty\n");
+        exit(1);
+    }
+    if (nln->value == NULL) {
+        printf("error : NumberList is empty\n");
+        exit(1);
+    }
+    if (nln->value->op == 0) {
+        NumberNode* now = nln->value->head;
+        while (now != NULL) {
+            if (now->number == DOT) {
+                printf(".");
+            }
+            else {
+                printf("%d", now->number);
+            }
+            now = now->next;
         }
+    }
+    else {
+        printf("op : %d ", nln->value->op);
     }
     printf("\n");
 }
