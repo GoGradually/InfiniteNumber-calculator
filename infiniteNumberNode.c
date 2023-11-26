@@ -210,9 +210,42 @@ NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
  */
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
-    /*
-     *  write the code
-     */
+    
+    NumberListNode* current1 = val1;//Pointer used to traverse the first linked list
+    NumberListNode* current2 = val2;//Pointer for traversing the second linked list
+    NumberListNode* currentResult = ret;//Pointer used to traverse the result list
+    int borrow = 0;// Used to track borrowing status
+
+    // Iterate over numbers
+    while (current1 != NULL || current2 != NULL) {
+        // Gets a number, using 0 if node is NULL
+        int digit1 = (current1 != NULL) ? current1->value->head->number : 0;
+        int digit2 = (current2 != NULL) ? current2->value->head->number : 0;
+
+        // Subtract numbers and handle borrowing
+        int resultDigit = digit1 - digit2 - borrow;
+        if (resultDigit < 0) {
+            resultDigit += 10;
+            borrow = 1;
+        } else {
+            borrow = 0;
+        }
+
+        // Set the result number in the current node
+        currentResult->value->head->number = resultDigit;
+
+        // move to next node
+        if (current1 != NULL) current1 = current1->next;
+        if (current2 != NULL) current2 = current2->next;
+
+        // Create a new node for the next result number
+        if (current1 != NULL || current2 != NULL) {
+            currentResult->next = makeNumberListNode();
+            currentResult = currentResult->next;
+        }
+    }
+
+    
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
     return ret;
