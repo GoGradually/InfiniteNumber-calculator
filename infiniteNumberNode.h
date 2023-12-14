@@ -22,8 +22,6 @@ typedef struct __NumberList {
     struct __NumberNode* tail;
     struct __NumberNode* dot;
     int op;
-    int integerCnt;
-    int fractionCnt;
 } NumberList;
 
 // A structure providing directionality for concatenating elements in a list of

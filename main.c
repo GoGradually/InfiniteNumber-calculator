@@ -7,7 +7,6 @@ int main() {
     queue *que = (queue *)malloc(sizeof(queue));
     initializeQueue(que);
     initializeStack(stk);
-    int cnt = 0;
     char before = '0';
     NumberListNode *nowNumberListNode = makeNumberListNode();
     while ((ch = (char)getchar()) != '\n') {
@@ -31,16 +30,16 @@ int main() {
                 printf("error : Invalid operator!!1%c\n", ch);
                 exit(1);
             }
-            nowNumberListNode->value->integerCnt = cnt;
-            cnt = 0;
             nowNumberListNode->value->dot = temp;
         } else if (ch == '*' || ch == '/' || ch == '+' || ch == '-') {
             if (nowNumberListNode->value->dot == NULL) {
-                nowNumberListNode->value->integerCnt = cnt;
-            } else {
-                nowNumberListNode->value->fractionCnt = cnt;
+                NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
+                mallocAssert(temp);
+                initializeNumberNode(temp);
+                NumberList_push_back(nowNumberListNode, DOT, temp);
+
+                nowNumberListNode->value->dot = temp;
             }
-            cnt = 0;
             queue_push(que, nowNumberListNode);
             nowNumberListNode = makeNumberListNode();
             int op = 0;
@@ -62,11 +61,15 @@ int main() {
         } else if (ch == '(') {
             if (before >= '0' && before <= '9') {
                 if (nowNumberListNode->value->dot == NULL) {
-                    nowNumberListNode->value->integerCnt = cnt;
+                    NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
+                    mallocAssert(temp);
+                    initializeNumberNode(temp);
+                    NumberList_push_back(nowNumberListNode, DOT, temp);
+
+                    nowNumberListNode->value->dot = temp;
                 } else {
-                    nowNumberListNode->value->fractionCnt = cnt;
                 }
-                cnt = 0;
+
                 queue_push(que, nowNumberListNode);
                 nowNumberListNode = makeNumberListNode();
 
@@ -75,11 +78,13 @@ int main() {
             stack_push_op(stk, que, OPEN_BRACKET);
         } else if (ch == ')') {
             if (nowNumberListNode->value->dot == NULL) {
-                nowNumberListNode->value->integerCnt = cnt;
-            } else {
-                nowNumberListNode->value->fractionCnt = cnt;
+                NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
+                mallocAssert(temp);
+                initializeNumberNode(temp);
+                NumberList_push_back(nowNumberListNode, DOT, temp);
+
+                nowNumberListNode->value->dot = temp;
             }
-            cnt = 0;
             queue_push(que, nowNumberListNode);
             nowNumberListNode = makeNumberListNode();
 
@@ -92,7 +97,6 @@ int main() {
                 }
             }
             NumberListNode_Clear(temp);
-            cnt = 0;
         } else {
             printf("error : Invalid operator3!!%c\n", ch);
             exit(1);
@@ -101,15 +105,20 @@ int main() {
     }
 
     if (nowNumberListNode->value->dot == NULL) {
-        nowNumberListNode->value->integerCnt = cnt;
+        NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
+        mallocAssert(temp);
+        initializeNumberNode(temp);
+        NumberList_push_back(nowNumberListNode, DOT, temp);
+
+        cnt = 0;
+        nowNumberListNode->value->dot = temp;
     } else {
-        nowNumberListNode->value->fractionCnt = cnt;
     }
     queue_push(que, nowNumberListNode);
 
-    while (stk->sTop !=NULL) queue_push(que, stack_pop(stk));
+    while (stk->sTop != NULL) queue_push(que, stack_pop(stk));
 
-    stack* operand = (stack*)malloc(sizeof(stack));
+    stack *operand = (stack *)malloc(sizeof(stack));
     mallocAssert(operand);
     initializeStack(operand);
     NumberListNode *pprev = NULL, *prev = NULL;

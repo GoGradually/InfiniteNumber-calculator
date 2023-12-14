@@ -15,8 +15,6 @@ void initializeNumberList(NumberList* list) {
     list->tail = NULL;
     list->dot = NULL;
     list->op = 0;
-    list->integerCnt = 0;
-    list->fractionCnt = 0;
 }
 void initializeNumberListNode(NumberListNode* node) {
     node->prev = NULL;
@@ -28,8 +26,7 @@ void NumberList_push_back(NumberListNode* nln, int val, NumberNode* now) {
     if (nln->value->tail == NULL) {
         nln->value->head = now;
         nln->value->tail = now;
-    }  
-    else {
+    } else {
         nln->value->tail->next = now;
         if (now == NULL) {
             printf("error : NULLNumber pushed in NumberList\n");
@@ -44,8 +41,7 @@ void NumberList_push_front(NumberListNode* nln, int val, NumberNode* now) {
     if (nln->value->head == NULL) {
         nln->value->head = now;
         nln->value->tail = now;
-    }
-    else {
+    } else {
         nln->value->head->prev = now;
         if (now == NULL) {
             printf("error : NULLNumber pushed in NumberList\n");
@@ -65,6 +61,14 @@ NumberListNode* makeNumberListNode() {
     nowNode->value = now;
     return nowNode;
 }
+
+NumberNode* makeNumberNode() {
+    NumberNode* now = (NumberNode*)malloc(sizeof(NumberNode));
+    mallocAssert(now);
+    initializeNumberNode(now);
+    return now;
+}
+
 void queue_push(queue* que, NumberListNode* nowNode) {
     if (que->qHead == NULL) {
         que->qHead = nowNode;
@@ -127,6 +131,7 @@ void mallocAssert(void* p) {
         exit(1);
     }
 }
+
 void NumberList_Clear(NumberList* nl) {
     while (nl->head != NULL) {
         NumberNode* temp = nl->head;
@@ -135,10 +140,12 @@ void NumberList_Clear(NumberList* nl) {
     }
     free(nl);
 }
+
 void NumberListNode_Clear(NumberListNode* nln) {
     NumberList_Clear(nln->value);
     free(nln);
 }
+
 void stack_push_op(stack* stk, queue* que, int opInput) {
     while (stk->sTop != NULL && (stk->sTop->value->op) != OPEN_BRACKET &&
            (stk->sTop->value->op) / 2 >= opInput / 2) {
@@ -167,14 +174,12 @@ void print_NumberListNode(NumberListNode* nln) {
         while (now != NULL) {
             if (now->number == DOT) {
                 printf(".");
-            }
-            else {
+            } else {
                 printf("%d", now->number);
             }
             now = now->next;
         }
-    }
-    else {
+    } else {
         printf("op : %d ", nln->value->op);
     }
     printf("\n");
@@ -183,23 +188,107 @@ void print_NumberListNode(NumberListNode* nln) {
 /*
  * divide by 2
  * coded by 한준호
- */
+
 
 void divide_by_2(NumberListNode* val) {}
+*/
 
 /*
  * add operation
  * The result of the calculation of val1 + val2 is stored in the
  * NumberListNode ret, and ret is returned.
- * coded by 김현식
+ * coded by 김현식, 이동철
  */
 NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
-    /*
-     *  write the code
-     */
-    NumberListNode_Clear(val1);
-    NumberListNode_Clear(val2);
+
+    NumberNode* i_current1 =
+        val1->value->dot->prev;  // Pointer used to traverse the integer part of
+                                 // linked list(val1,val2)
+    NumberNode* i_current2 = val2->value->dot->prev;
+
+    NumberNode* f_current1 =
+        val1->value->dot->next;  // Pointer used to traverse the decimal part of
+                                 // linked list(val1,val2)
+    NumberNode* f_current2 = val2->value->dot->next;
+
+    NumberNode* now;  // Pointer used to make NumberNode for linked list(ret)
+
+    int carry = 0;  // number used to carry
+
+    while (f_current1 != NULL ||
+           f_current2 !=
+               NULL) {  // loop used to calculate decimal part of linked
+                        // list(val1, val2) and add calculate result to linked
+                        // list(ret) ex) 123.45+123.35, calculate result of this
+                        // loop is 710(decimal part)
+        int float1 = (f_current1 != NULL) ? f_current1->number : 0;
+        int float2 = (f_current2 != NULL) ? f_current2->number : 0;
+
+        int sum = float1 + float2;
+
+        now = makeNumberNode();
+        NumberList_push_back(ret, sum, now);
+
+        if (f_current1 != NULL) f_current1 = f_current1->next;
+        if (f_current2 != NULL) f_current2 = f_current2->next;
+    }
+
+    NumberNode* r_current =
+        ret->value->tail;  // Pointer used to traverse the decimal part of
+                           // linked list(ret)
+
+    while (r_current != NULL) {  // loop used to carry decimal part of linked
+                                 // list(ret) ex) 123.45+123.35, calculate
+                                 // result of this loop is 80(decimal part)
+        int sum = r_current->number + carry;
+        carry = sum / 10;
+        r_current->number = (sum) % 10;
+
+        r_current = r_current->prev;
+    }
+
+    now = makeNumberNode();
+    NumberList_push_front(
+        ret, DOT, now);  // add dot to linked list(ret) ex) 123.45+123.35,
+                         // calculate result of this loop is .80(decimal part)
+    ret->value->dot = ret->value->head;
+
+    while (i_current1 != NULL || i_current2 != NULL ||
+           carry != 0) {  // loop used to calculate and carry integer part of
+                          // linked list(val1, val2) and add calculate result to
+                          // linked list(ret)
+        int digit1 = (i_current1 != NULL) ? i_current1->number
+                                          : 0;  // ex) 123.45+123.35, calculate
+                                                // result of this loop is 246.80
+        int digit2 = (i_current2 != NULL) ? i_current2->number : 0;
+
+        int sum = digit1 + digit2 + carry;
+        carry = sum / 10;
+
+        now = makeNumberNode();
+        NumberList_push_front(ret, sum % 10, now);
+
+        if (i_current1 != NULL) i_current1 = i_current1->prev;
+        if (i_current2 != NULL) i_current2 = i_current2->prev;
+    }
+
+    while (ret->value->tail->number == 0 ||
+           ret->value->tail ==
+               ret->value->dot) {  // loop used to free zero value at ending of
+                                   // calculate result(ret) ex) 123.45+123.35,
+                                   // calculate result of this loop is 246.8
+        NumberNode* temp = ret->value->tail;
+        ret->value->tail = ret->value->tail->prev;
+        ret->value->tail->next = NULL;
+        if (temp == ret->value->dot) {
+            ret->value->dot = NULL;
+            free(temp);
+            break;
+        }
+        free(temp);
+    }
+
     return ret;
 }
 /*
@@ -210,11 +299,14 @@ NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
  */
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
-    
-    NumberListNode* current1 = val1;//Pointer used to traverse the first linked list
-    NumberListNode* current2 = val2;//Pointer for traversing the second linked list
-    NumberListNode* currentResult = ret;//Pointer used to traverse the result list
-    int borrow = 0;// Used to track borrowing status
+
+    NumberListNode* current1 =
+        val1;  // Pointer used to traverse the first linked list
+    NumberListNode* current2 =
+        val2;  // Pointer for traversing the second linked list
+    NumberListNode* currentResult =
+        ret;         // Pointer used to traverse the result list
+    int borrow = 0;  // Used to track borrowing status
 
     // Iterate over numbers
     while (current1 != NULL || current2 != NULL) {
@@ -245,7 +337,6 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
         }
     }
 
-    
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
     return ret;
