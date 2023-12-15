@@ -30,14 +30,15 @@ int main() {
             if (before == '(' || before == 'x') {
                 NumberNode *temp = makeNumberNode();
                 NumberList_push_back(nowNumberListNode->value, 0, temp);
-                NumberList_push_dot(nowNumberListNode->value);
             }
             //////////////////////////
-            if (nowNumberListNode->value->dot == NULL) {
+            if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
                 NumberList_push_dot(nowNumberListNode->value);
             }
-            queue_push(que, nowNumberListNode);
-            nowNumberListNode = makeNumberListNode();
+            if (nowNumberListNode->value->head != NULL) {
+                queue_push(que, nowNumberListNode);
+                nowNumberListNode = makeNumberListNode();
+            }
             int op = 0;
             switch (ch) {
                 case '*':
@@ -56,21 +57,26 @@ int main() {
             stack_push_op(stk, que, op);
         } else if (ch == '(') {
             if (before >= '0' && before <= '9') {
-                if (nowNumberListNode->value->dot == NULL) {
+                if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
                     NumberList_push_dot(nowNumberListNode->value);
                 }
-                queue_push(que, nowNumberListNode);
-                nowNumberListNode = makeNumberListNode();
+                if (nowNumberListNode->value->head != NULL) {
+                    queue_push(que, nowNumberListNode);
+                    nowNumberListNode = makeNumberListNode();
+                }
 
                 stack_push_op(stk, que, MUL);
             }
             stack_push_op(stk, que, OPEN_BRACKET);
         } else if (ch == ')') {
-            if (nowNumberListNode->value->dot == NULL) {
+            if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
                 NumberList_push_dot(nowNumberListNode->value);
             }
-            queue_push(que, nowNumberListNode);
-            nowNumberListNode = makeNumberListNode();
+            printf("sda\n");
+            if (nowNumberListNode->value->head != NULL) {
+                queue_push(que, nowNumberListNode);
+                nowNumberListNode = makeNumberListNode();
+            }
 
             NumberListNode *temp;
             while ((temp = stack_pop(stk))->value->op != OPEN_BRACKET) {
@@ -86,21 +92,28 @@ int main() {
             exit(1);
         }
         before = ch;
+        //debug
+        print_queue(que);
+        //
     }
 
-    if (nowNumberListNode->value->dot == NULL) {
+    if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
         NumberList_push_dot(nowNumberListNode->value);
+        queue_push(que, nowNumberListNode);
     }
-    queue_push(que, nowNumberListNode);
 
     while (stk->sTop != NULL) queue_push(que, stack_pop(stk));
 
+    //debug
+    print_queue(que);
+    //
     stack *operand = (stack *)malloc(sizeof(stack));
     mallocAssert(operand);
     initializeStack(operand);
     NumberListNode *pprev = NULL, *prev = NULL;
     while (que->qHead != NULL) {
         NumberListNode *now = queue_pop(que);
+        printf("now popped on queue : ");
         print_NumberListNode(now);
         if (now->value->op == 0) {
             stack_push(operand, now);
@@ -115,22 +128,22 @@ int main() {
             int op = now->value->op;
             switch (op) {
                 case ADD:
-                    if (pprev->value->sign == 1 && prev->value->sign == 1) {
+                    if (pprev->value->sig == 1 && prev->value->sig == 1) {
                         stack_push(operand, add(pprev, prev));
-                    } else if (pprev->value->sign == -1 &&
-                               prev->value->sign == 1) {
+                    } else if (pprev->value->sig == -1 &&
+                               prev->value->sig == 1) {
                         if (compareAbsoluteValue(pprev, prev) <= 0) {
-                            pprev->value->sign *= -1;
+                            pprev->value->sig *= -1;
                             stack_push(operand, subtract(prev, pprev));
                         } else {
                             stack_push(operand, subtract(pprev, prev));
                         }
-                    } else if (pprev->value->sign == 1 &&
-                               prev->value->sign == -1) {
+                    } else if (pprev->value->sig == 1 &&
+                               prev->value->sig == -1) {
                         if (compareAbsoluteValue(pprev, prev) <= 0) {
                             stack_push(operand, subtract(prev, pprev));
                         } else {
-                            prev->value->sign *= -1;
+                            prev->value->sig *= -1;
                             stack_push(operand, subtract(pprev, prev));
                         }
                     } else {
@@ -138,28 +151,28 @@ int main() {
                     }
                     break;
                 case SUB:
-                    if (pprev->value->sign == 1 && prev->value->sign == 1) {
+                    if (pprev->value->sig == 1 && prev->value->sig == 1) {
                         if (compareAbsoluteValue(pprev, prev) <= 0) {
-                            prev->value->sign *= -1;
+                            prev->value->sig *= -1;
                             stack_push(operand, subtract(prev, pprev));
                         } else {
                             stack_push(operand, subtract(pprev, prev));
                         }
-                    } else if (pprev->value->sign == -1 &&
-                               prev->value->sign == 1) {
-                        prev->value->sign *= -1;
+                    } else if (pprev->value->sig == -1 &&
+                               prev->value->sig == 1) {
+                        prev->value->sig *= -1;
                         stack_push(operand, add(pprev, prev));
-                    } else if (pprev->value->sign == 1 &&
-                               prev->value->sign == -1) {
-                        prev->value->sign *= -1;
+                    } else if (pprev->value->sig == 1 &&
+                               prev->value->sig == -1) {
+                        prev->value->sig *= -1;
                         stack_push(operand, add(pprev, prev));
                     } else {
                         if (compareAbsoluteValue(pprev, prev) <= 0) {
-                            prev->value->sign *= -1;
-                            pprev->value->sign *= -1;
+                            prev->value->sig *= -1;
+                            pprev->value->sig *= -1;
                             stack_push(operand, subtract(prev, pprev));
                         } else {
-                            prev->value->sign *= -1;
+                            prev->value->sig *= -1;
                             stack_push(operand, subtract(pprev, prev));
                         }
                     }
@@ -173,11 +186,12 @@ int main() {
             }
             pprev = NULL;
         }
+        print_stack_top(operand);
     }
     if (pprev != NULL) {
         printf("error : Invalid Operation6!!\n");
         exit(1);
     }
-    print_NumberListNode(prev);
+    print_NumberListNode(stack_pop(operand));
     return 0;
 }

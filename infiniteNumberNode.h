@@ -8,7 +8,7 @@
 #define SUB 3
 #define MUL 4
 #define DIV 5
-#define OPEN_BRACKET 1
+#define OPEN_BRACKET 1000000
 #define DOT -1000000000
 typedef struct __NumberNode {
     int number;
@@ -21,7 +21,7 @@ typedef struct __NumberList {
     struct __NumberNode* head;
     struct __NumberNode* tail;
     struct __NumberNode* dot;
-    int sign;
+    int sig;
     int op;
 } NumberList;
 
@@ -45,6 +45,7 @@ typedef struct __calStack {
 void NumberList_push_back(NumberList* nl, int val, NumberNode* now);
 void NumberList_push_front(NumberList* nl, int val, NumberNode* now);
 NumberListNode* makeNumberListNode();
+NumberList* makeNumberList();
 NumberNode* makeNumberNode();
 void queue_push(queue* Q, NumberListNode* nowNode);
 NumberListNode* queue_pop(queue* Q);
@@ -70,3 +71,8 @@ NumberListNode* add(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* divide(NumberListNode* val1, NumberListNode* val2);
+
+
+//for debug
+void print_stack_top(stack* s);
+void print_queue(queue* q);
