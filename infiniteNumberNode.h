@@ -21,6 +21,7 @@ typedef struct __NumberList {
     struct __NumberNode* head;
     struct __NumberNode* tail;
     struct __NumberNode* dot;
+    int sign;
     int op;
 } NumberList;
 
@@ -41,9 +42,10 @@ typedef struct __calStack {
     NumberListNode* sTop;
 } stack;
 
-void NumberList_push_back(NumberListNode* nl, int val, NumberNode* now);
-void NumberList_push_front(NumberListNode* nl, int val, NumberNode* now);
+void NumberList_push_back(NumberList* nl, int val, NumberNode* now);
+void NumberList_push_front(NumberList* nl, int val, NumberNode* now);
 NumberListNode* makeNumberListNode();
+NumberNode* makeNumberNode();
 void queue_push(queue* Q, NumberListNode* nowNode);
 NumberListNode* queue_pop(queue* Q);
 void stack_push(stack* S, NumberListNode* now);
@@ -60,7 +62,10 @@ void initializeNumberNode(NumberNode* node);
 void initializeNumberList(NumberList* list);
 void initializeNumberListNode(NumberListNode* node);
 
+int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2);
 void divide_by_2(NumberListNode* val);
+void NumberList_push_dot(NumberList* nl);
+
 NumberListNode* add(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2);

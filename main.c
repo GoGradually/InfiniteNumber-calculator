@@ -16,29 +16,25 @@ int main() {
             if (before == ')') {
                 stack_push_op(stk, que, MUL);
             }
-            NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-            mallocAssert(temp);
-            initializeNumberNode(temp);
-            NumberList_push_back(nowNumberListNode, (int)(ch - '0'), temp);
-            cnt++;
+            NumberNode *temp = makeNumberNode();
+            NumberList_push_back(nowNumberListNode->value, (int)(ch - '0'),
+                                 temp);
         } else if (ch == '.') {
-            NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-            mallocAssert(temp);
-            initializeNumberNode(temp);
-            NumberList_push_back(nowNumberListNode, DOT, temp);
             if (nowNumberListNode->value->dot != NULL) {
                 printf("error : Invalid operator!!1%c\n", ch);
                 exit(1);
             }
-            nowNumberListNode->value->dot = temp;
+            NumberList_push_dot(nowNumberListNode->value);
         } else if (ch == '*' || ch == '/' || ch == '+' || ch == '-') {
+            //////////////////////////
+            if (before == '(') {
+                NumberNode *temp = makeNumberNode();
+                NumberList_push_back(nowNumberListNode->value, 0, temp);
+                NumberList_push_dot(nowNumberListNode->value);
+            }
+            //////////////////////////
             if (nowNumberListNode->value->dot == NULL) {
-                NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-                mallocAssert(temp);
-                initializeNumberNode(temp);
-                NumberList_push_back(nowNumberListNode, DOT, temp);
-
-                nowNumberListNode->value->dot = temp;
+                NumberList_push_dot(nowNumberListNode->value);
             }
             queue_push(que, nowNumberListNode);
             nowNumberListNode = makeNumberListNode();
@@ -61,15 +57,8 @@ int main() {
         } else if (ch == '(') {
             if (before >= '0' && before <= '9') {
                 if (nowNumberListNode->value->dot == NULL) {
-                    NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-                    mallocAssert(temp);
-                    initializeNumberNode(temp);
-                    NumberList_push_back(nowNumberListNode, DOT, temp);
-
-                    nowNumberListNode->value->dot = temp;
-                } else {
+                    NumberList_push_dot(nowNumberListNode->value);
                 }
-
                 queue_push(que, nowNumberListNode);
                 nowNumberListNode = makeNumberListNode();
 
@@ -78,12 +67,7 @@ int main() {
             stack_push_op(stk, que, OPEN_BRACKET);
         } else if (ch == ')') {
             if (nowNumberListNode->value->dot == NULL) {
-                NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-                mallocAssert(temp);
-                initializeNumberNode(temp);
-                NumberList_push_back(nowNumberListNode, DOT, temp);
-
-                nowNumberListNode->value->dot = temp;
+                NumberList_push_dot(nowNumberListNode->value);
             }
             queue_push(que, nowNumberListNode);
             nowNumberListNode = makeNumberListNode();
@@ -105,14 +89,7 @@ int main() {
     }
 
     if (nowNumberListNode->value->dot == NULL) {
-        NumberNode *temp = (NumberNode *)malloc(sizeof(NumberNode));
-        mallocAssert(temp);
-        initializeNumberNode(temp);
-        NumberList_push_back(nowNumberListNode, DOT, temp);
-
-        cnt = 0;
-        nowNumberListNode->value->dot = temp;
-    } else {
+        NumberList_push_dot(nowNumberListNode->value);
     }
     queue_push(que, nowNumberListNode);
 
@@ -128,6 +105,7 @@ int main() {
         if (now->value->op == 0) {
             stack_push(operand, now);
         } else {
+            // pprev op prev
             prev = stack_pop(operand);
             pprev = stack_pop(operand);
             if (prev == NULL || pprev == NULL) {
@@ -137,16 +115,60 @@ int main() {
             int op = now->value->op;
             switch (op) {
                 case ADD:
-                    stack_push(operand, add(prev, pprev));
+                    if (pprev->value->sign == 1 && prev->value->sign == 1) {
+                        stack_push(operand, add(pprev, prev));
+                    } else if (pprev->value->sign == -1 &&
+                               prev->value->sign == 1) {
+                        if (compareAbsoluteValue(pprev, prev) <= 0) {
+                            pprev->value->sign *= -1;
+                            stack_push(operand, subtract(prev, pprev));
+                        } else {
+                            stack_push(operand, subtract(pprev, prev));
+                        }
+                    } else if (pprev->value->sign == 1 &&
+                               prev->value->sign == -1) {
+                        if (compareAbsoluteValue(pprev, prev) <= 0) {
+                            stack_push(operand, subtract(prev, pprev));
+                        } else {
+                            prev->value->sign *= -1;
+                            stack_push(operand, subtract(pprev, prev));
+                        }
+                    } else {
+                        stack_push(operand, add(pprev, prev));
+                    }
                     break;
                 case SUB:
-                    stack_push(operand, subtract(prev, pprev));
+                    if (pprev->value->sign == 1 && prev->value->sign == 1) {
+                        if (compareAbsoluteValue(pprev, prev) <= 0) {
+                            prev->value->sign *= -1;
+                            stack_push(operand, subtract(prev, pprev));
+                        } else {
+                            stack_push(operand, subtract(pprev, prev));
+                        }
+                    } else if (pprev->value->sign == -1 &&
+                               prev->value->sign == 1) {
+                        prev->value->sign *= -1;
+                        stack_push(operand, add(pprev, prev));
+                    } else if (pprev->value->sign == 1 &&
+                               prev->value->sign == -1) {
+                        prev->value->sign *= -1;
+                        stack_push(operand, add(pprev, prev));
+                    } else {
+                        if (compareAbsoluteValue(pprev, prev) <= 0) {
+                            prev->value->sign *= -1;
+                            pprev->value->sign *= -1;
+                            stack_push(operand, subtract(prev, pprev));
+                        } else {
+                            prev->value->sign *= -1;
+                            stack_push(operand, subtract(pprev, prev));
+                        }
+                    }
                     break;
                 case MUL:
-                    stack_push(operand, multiply(prev, pprev));
+                    stack_push(operand, multiply(pprev, prev));
                     break;
                 case DIV:
-                    stack_push(operand, divide(prev, pprev));
+                    stack_push(operand, divide(pprev, prev));
                     break;
             }
             pprev = NULL;
