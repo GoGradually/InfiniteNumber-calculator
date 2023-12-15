@@ -99,9 +99,11 @@ int main() {
 
     if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
         NumberList_push_dot(nowNumberListNode->value);
-        queue_push(que, nowNumberListNode);
     }
-
+    if (nowNumberListNode->value->head != NULL) {
+        queue_push(que, nowNumberListNode);
+        nowNumberListNode = makeNumberListNode();
+    }
     while (stk->sTop != NULL) queue_push(que, stack_pop(stk));
 
     //debug
