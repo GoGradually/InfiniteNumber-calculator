@@ -16,6 +16,10 @@ int main() {
             if (before == ')') {
                 stack_push_op(stk, que, MUL);
             }
+            else if (!(before >= '0' && before <= '9') && ch == '0') {
+                printf("error : leading zero!!\n");
+                exit(1);
+            }
             NumberNode *temp = makeNumberNode();
             NumberList_push_back(nowNumberListNode->value, (int)(ch - '0'),
                                  temp);
