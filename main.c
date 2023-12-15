@@ -7,7 +7,7 @@ int main() {
     queue *que = (queue *)malloc(sizeof(queue));
     initializeQueue(que);
     initializeStack(stk);
-    char before = '0';
+    char before = 'x';
     NumberListNode *nowNumberListNode = makeNumberListNode();
     while ((ch = (char)getchar()) != '\n') {
         if (ch == ' ' || ch == '\t' || ch == '\n') {
@@ -27,7 +27,7 @@ int main() {
             NumberList_push_dot(nowNumberListNode->value);
         } else if (ch == '*' || ch == '/' || ch == '+' || ch == '-') {
             //////////////////////////
-            if (before == '(') {
+            if (before == '(' || before == 'x') {
                 NumberNode *temp = makeNumberNode();
                 NumberList_push_back(nowNumberListNode->value, 0, temp);
                 NumberList_push_dot(nowNumberListNode->value);
