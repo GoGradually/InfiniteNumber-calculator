@@ -24,32 +24,32 @@ void initializeNumberListNode(NumberListNode* node) {
 }
 void NumberList_push_back(NumberList* nl, int val, NumberNode* now) {
     now->number = val;
-    if (nl->value->tail == NULL) {
-        nl->value->head = now;
-        nl->value->tail = now;
+    if (nl->tail == NULL) {
+        nl->head = now;
+        nl->tail = now;
     } else {
-        nl->value->tail->next = now;
+        nl->tail->next = now;
         if (now == NULL) {
             printf("error : NULLNumber pushed in NumberList\n");
             exit(1);
         }
-        now->prev = nl->value->tail;
-        nl->value->tail = now;
+        now->prev = nl->tail;
+        nl->tail = now;
     }
 }
 void NumberList_push_front(NumberList* nl, int val, NumberNode* now) {
     now->number = val;
-    if (nl->value->head == NULL) {
-        nl->value->head = now;
-        nl->value->tail = now;
+    if (nl->head == NULL) {
+        nl->head = now;
+        nl->tail = now;
     } else {
-        nl->value->head->prev = now;
+        nl->head->prev = now;
         if (now == NULL) {
             printf("error : NULLNumber pushed in NumberList\n");
             exit(1);
         }
-        now->next = nl->value->head;
-        nl->value->head = now;
+        now->next = nl->head;
+        nl->head = now;
     }
 }
 NumberListNode* makeNumberListNode() {
@@ -72,8 +72,8 @@ NumberNode* makeNumberNode() {
 
 void NumberList_push_dot(NumberList* nl) {
     NumberNode* temp = makeNumberNode();
-    NumberList_push_back(nowNumberListNode->value, DOT, temp);
-    nowNumberListNode->value->dot = temp;
+    NumberList_push_back(nl, DOT, temp);
+    nl->dot = temp;
 }
 void queue_push(queue* que, NumberListNode* nowNode) {
     if (que->qHead == NULL) {
@@ -312,14 +312,14 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
     ret->value->sign = val1->value->sign;
 
-    NumberListNode* i_current1 =
+    NumberNode* i_current1 =
         val1->value->dot
             ->prev;  // Pointer used to traverse the first linked list
-    NumberListNode* i_current2 =
+    NumberNode* i_current2 =
         val2->value->dot
             ->prev;  // Pointer for traversing the second linked list
-    NumberListNode* f_current1 = val1->value->dot->next;
-    NumberListNode* f_current2 =
+    NumberNode* f_current1 = val1->value->dot->next;
+    NumberNode* f_current2 =
         val2->value->dot->next;  // Pointer used to traverse the result list
     NumberNode* now;
     int borrow = 0;  // Used to track borrowing status
@@ -450,7 +450,7 @@ int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
     int ret = 0;
     while (i_current1 != NULL && i_current2 != NULL) {
         if (i_current1->number > i_current2->number) {
-            ret = 1
+            ret = 1;
         } else if (i_current1->number < i_current2->number) {
             ret = -1;
         }
@@ -467,7 +467,7 @@ int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
 
     while (f_current1 != NULL && f_current2 != NULL && ret == 0) {
         if (f_current1->number > f_current2->number) {
-            ret = 1
+            ret = 1;
         } else if (f_current1->number < f_current2->number) {
             ret = -1;
         }
