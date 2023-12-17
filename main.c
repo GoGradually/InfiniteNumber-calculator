@@ -9,14 +9,13 @@ int main() {
     initializeStack(stk);
     char before = 'x';
     NumberListNode *nowNumberListNode = makeNumberListNode();
-    while ((ch = (char)getchar()) != '\n') {
+    while ((ch = (char)getchar()) != EOF) {
         if (ch == ' ' || ch == '\t' || ch == '\n') {
             continue;
         } else if (ch >= '0' && ch <= '9') {
             if (before == ')') {
                 stack_push_op(stk, que, MUL);
-            }
-            else if (!(before >= '0' && before <= '9') && ch == '0') {
+            } else if (!(before >= '0' && before <= '9') && ch == '0') {
                 printf("error : leading zero!!\n");
                 exit(1);
             }
@@ -36,7 +35,8 @@ int main() {
                 NumberList_push_back(nowNumberListNode->value, 0, temp);
             }
             //////////////////////////
-            if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
+            if (nowNumberListNode->value->head != NULL &&
+                nowNumberListNode->value->dot == NULL) {
                 NumberList_push_dot(nowNumberListNode->value);
             }
             if (nowNumberListNode->value->head != NULL) {
@@ -61,7 +61,8 @@ int main() {
             stack_push_op(stk, que, op);
         } else if (ch == '(') {
             if (before >= '0' && before <= '9') {
-                if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
+                if (nowNumberListNode->value->head != NULL &&
+                    nowNumberListNode->value->dot == NULL) {
                     NumberList_push_dot(nowNumberListNode->value);
                 }
                 if (nowNumberListNode->value->head != NULL) {
@@ -73,7 +74,8 @@ int main() {
             }
             stack_push_op(stk, que, OPEN_BRACKET);
         } else if (ch == ')') {
-            if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
+            if (nowNumberListNode->value->head != NULL &&
+                nowNumberListNode->value->dot == NULL) {
                 NumberList_push_dot(nowNumberListNode->value);
             }
             printf("sda\n");
@@ -96,12 +98,13 @@ int main() {
             exit(1);
         }
         before = ch;
-        //debug
+        // debug
         print_queue(que);
         //
     }
 
-    if (nowNumberListNode->value->head != NULL && nowNumberListNode->value->dot == NULL) {
+    if (nowNumberListNode->value->head != NULL &&
+        nowNumberListNode->value->dot == NULL) {
         NumberList_push_dot(nowNumberListNode->value);
     }
     if (nowNumberListNode->value->head != NULL) {
@@ -110,7 +113,7 @@ int main() {
     }
     while (stk->sTop != NULL) queue_push(que, stack_pop(stk));
 
-    //debug
+    // debug
     print_queue(que);
     //
     stack *operand = (stack *)malloc(sizeof(stack));
