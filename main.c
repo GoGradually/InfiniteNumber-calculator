@@ -111,7 +111,7 @@ int main() {
         }
         before = ch;
         // debug
-        print_queue(que);
+        // print_queue(que);
         //
     }
 
@@ -126,7 +126,7 @@ int main() {
     while (stk->sTop != NULL) queue_push(que, stack_pop(stk));
 
     // debug
-    print_queue(que);
+    // print_queue(que);
     //
     stack *operand = (stack *)malloc(sizeof(stack));
     mallocAssert(operand);
@@ -134,8 +134,8 @@ int main() {
     NumberListNode *pprev = NULL, *prev = NULL;
     while (que->qHead != NULL) {
         NumberListNode *now = queue_pop(que);
-        printf("now popped on queue : ");
-        print_NumberListNode(now);
+        // printf("now popped on queue : ");
+        // print_NumberListNode(now);
         if (now->value->op == 0) {
             stack_push(operand, now);
         } else {
@@ -207,7 +207,7 @@ int main() {
             }
             pprev = NULL;
         }
-        print_stack_top(operand);
+        // print_stack_top(operand);
     }
     if (pprev != NULL) {
         printf("error : Invalid Operation6!!\n");

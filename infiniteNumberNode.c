@@ -198,7 +198,7 @@ void print_NumberListNode(NumberListNode* nln) {
         NumberNode* now = nln->value->head;
         while (now != NULL) {
             if (now->number == DOT) {
-                printf(".");
+                if (now != nln->value->tail) printf(".");
             } else {
                 printf("%d", now->number);
             }
@@ -431,7 +431,7 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
 
 /*
  * multiply operation
- * coded by 한준호
+ * coded by 한준호, 이동철
  */
 NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
