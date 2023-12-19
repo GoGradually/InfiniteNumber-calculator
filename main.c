@@ -90,7 +90,6 @@ int main() {
                 nowNumberListNode->value->dot == NULL) {
                 NumberList_push_dot(nowNumberListNode->value);
             }
-            printf("sda\n");
             if (nowNumberListNode->value->head != NULL) {
                 queue_push(que, nowNumberListNode);
                 nowNumberListNode = makeNumberListNode();
