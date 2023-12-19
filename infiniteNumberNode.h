@@ -65,7 +65,7 @@ void initializeNumberList(NumberList* list);
 void initializeNumberListNode(NumberListNode* node);
 
 int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2);
-void divide_by_2(NumberListNode* val);
+NumberListNode* divide_by_2(NumberListNode* val);
 void divide_by_10(NumberListNode* val);
 void product_by_10(NumberListNode* val);
 void NumberList_push_dot(NumberList* nl);

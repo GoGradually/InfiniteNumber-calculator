@@ -500,19 +500,19 @@ NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2) {
  * coded by 한준호
  */
 NumberListNode* divide(NumberListNode* val1, NumberListNode* val2) {
-    NumberListNode* ret = makeNumberListNode();
-    ret->value->sig = val1->value->sig * val2->value->sig;
+    NumberListNode* zero = makeNumberListNode();
     NumberNode* initializer = makeNumberNode();
-    NumberList_push_back(ret->value, 0, initializer);
+    NumberList_push_back(zero->value, 0, initializer);
     initializer = makeNumberNode();
-    NumberList_push_back(ret->value, DOT, initializer);
-    ret->value->dot = initializer;
+    NumberList_push_back(zero->value, DOT, initializer);
+    zero->value->dot = initializer;
 
-    if (compareAbsoluteValue(ret, val2) == 0) {
+    if (compareAbsoluteValue(zero, val2) == 0) {
         printf("error : divide by 0\n");
         exit(1);
     }
-    NumberListNode* smallVal = copyNumberListNode(ret);
+    NumberListNode* smallVal = copyNumberListNode(zero);
+
     for (int i = 0; i < 1000; i++) {
         NumberNode* temp = makeNumberNode();
         if (i == 999)
@@ -520,10 +520,41 @@ NumberListNode* divide(NumberListNode* val1, NumberListNode* val2) {
         else
             NumberList_push_back(smallVal->value, 0, temp);
     }
+    while (val1->value->tail != val1->value->dot ||
+           val2->value->tail != val2->value->dot) {
+        product_by_10(val1);
+        product_by_10(val2);
+    }
+    NumberListNode* left = copyNumberListNode(smallVal);
+    NumberListNode* right = copyNumberListNode(val1);
+    int cnt = 0;
+    while (cnt < 1000) {
+        NumberListNode* temp1 = copyNumberListNode(left);
+        NumberListNode* temp2 = copyNumberListNode(right);
+        NumberListNode* temp3 = copyNumberListNode(smallVal);
+        if (compareAbsoluteValue(add(temp1, temp3), temp2) >= 0) {
+            break;
+        }
+        NumberListNode* L = copyNumberListNode(left);
+        NumberListNode* R = copyNumberListNode(right);
 
+        NumberListNode* mid = divide_by_2(add(L, R));
+        NumberListNode* M = copyNumberListNode(mid);
+        NumberListNode* VAL2 = copyNumberListNode(val2);
+        if (compareAbsoluteValue(multiply(M, VAL2), val1) > 0) {
+            NumberListNode_Clear(right);
+            right = mid;
+        } else {
+            NumberListNode_Clear(left);
+            left = mid;
+        }
+        cnt++;
+    }
+    right->value->sig = val1->value->sig * val2->value->sig;
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
-    return ret;
+    NumberListNode_Clear(left);
+    return right;
 }
 
 int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
@@ -654,4 +685,16 @@ void product_by_10(NumberListNode* val) {
         nnext->prev = now;
     }
 }
-void divide_by_2(NumberListNode* val) {}
+NumberListNode* divide_by_2(NumberListNode* val) {
+    NumberListNode* ret = makeNumberListNode();
+    NumberNode* initializer = makeNumberNode();
+    NumberList_push_back(ret->value, 5, initializer);
+    initializer = makeNumberNode();
+    NumberList_push_back(ret->value, DOT, initializer);
+    ret->value->dot = initializer;
+    // 현재 ret에 5. 저장됨
+
+    divide_by_10(val);
+    ret = multiply(ret, val);
+    return ret;
+}
