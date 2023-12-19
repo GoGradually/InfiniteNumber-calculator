@@ -513,7 +513,7 @@ NumberListNode* divide(NumberListNode* val1, NumberListNode* val2) {
     }
     NumberListNode* smallVal = copyNumberListNode(zero);
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10000; i++) {
         NumberNode* temp = makeNumberNode();
         if (i == 999)
             NumberList_push_back(smallVal->value, 1, temp);
