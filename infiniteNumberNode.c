@@ -211,14 +211,6 @@ void print_NumberListNode(NumberListNode* nln) {
 }
 
 /*
- * divide by 2
- * coded by 한준호
-
-
-void divide_by_2(NumberListNode* val) {}
-*/
-
-/*
  * add operation
  * The result of the calculation of val1 + val2 is stored in the
  * NumberListNode ret, and ret is returned.
@@ -662,3 +654,4 @@ void product_by_10(NumberListNode* val) {
         nnext->prev = now;
     }
 }
+void divide_by_2(NumberListNode* val) {}
