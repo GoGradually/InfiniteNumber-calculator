@@ -291,21 +291,8 @@ NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
         if (i_current2 != NULL) i_current2 = i_current2->prev;
     }
 
-    while (ret->value->tail->number == 0 ||
-           ret->value->tail ==
-               ret->value->dot) {  // loop used to free zero value at ending of
-                                   // calculate result(ret) ex) 123.45+123.35,
-                                   // calculate result of this loop is 246.8
-        NumberNode* temp = ret->value->tail;
-        ret->value->tail = ret->value->tail->prev;
-        ret->value->tail->next = NULL;
-        if (temp == ret->value->dot) {
-            ret->value->dot = NULL;
-            free(temp);
-            break;
-        }
-        free(temp);
-    }
+    delete_zero(ret);
+
     if (ret->value->dot == NULL) {
         NumberList_push_dot(ret->value);
     }
@@ -395,30 +382,7 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
         if (i_current2 != NULL) i_current2 = i_current2->prev;
     }
     // Remove leading zeros
-    while (ret->value->head->number == 0 &&
-           ret->value->head != ret->value->dot->prev) {
-        NumberNode* temp = ret->value->head;
-        ret->value->head = ret->value->head->next;
-        ret->value->head->prev = NULL;
-        if (temp == ret->value->dot->prev) {
-            free(temp);
-            break;
-        }
-        free(temp);
-    }
-
-    while (ret->value->tail->number == 0 &&
-           ret->value->tail != ret->value->dot) {
-        NumberNode* temp = ret->value->tail;
-        ret->value->tail = ret->value->tail->prev;
-        ret->value->tail->next = NULL;
-        if (temp == ret->value->dot) {
-            ret->value->dot = NULL;
-            free(temp);
-            break;
-        }
-        free(temp);
-    }
+    delete_zero(ret);
 
     if (ret->value->dot == NULL) {
         NumberList_push_dot(ret->value);
@@ -711,7 +675,19 @@ NumberListNode* divide_by_2(NumberListNode* val) {
     return ret;
 }
 
-void delete_zero(NumberList* val) {
+void delete_zero(NumberListNode* val) {
+    while (val->value->head->number == 0 &&
+           val->value->head != val->value->dot->prev) {
+        NumberNode* temp = val->value->head;
+        val->value->head = val->value->head->next;
+        val->value->head->prev = NULL;
+        if (temp == val->value->dot->prev) {
+            free(temp);
+            break;
+        }
+        free(temp);
+    }
+
     while (val->value->tail->number == 0 &&
            val->value->tail != val->value->dot) {
         NumberNode* temp = val->value->tail;
@@ -719,18 +695,6 @@ void delete_zero(NumberList* val) {
         val->value->tail->next = NULL;
         if (temp == val->value->dot) {
             val->value->dot = NULL;
-            free(temp);
-            break;
-        }
-        free(temp);
-    }
-    while (val->value->tail->number == 0 &&
-           val->value->tail != val->value->dot) {
-        NumberNode* temp = ret->value->tail;
-        ret->value->tail = ret->value->tail->prev;
-        ret->value->tail->next = NULL;
-        if (temp == ret->value->dot) {
-            ret->value->dot = NULL;
             free(temp);
             break;
         }

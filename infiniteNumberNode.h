@@ -69,6 +69,7 @@ NumberListNode* divide_by_2(NumberListNode* val);
 void divide_by_10(NumberListNode* val);
 void product_by_10(NumberListNode* val);
 void NumberList_push_dot(NumberList* nl);
+void delete_zero(NumberListNode* val);
 
 NumberListNode* add(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2);

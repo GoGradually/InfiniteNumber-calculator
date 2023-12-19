@@ -1,7 +1,7 @@
 
 #include "infiniteNumberNode.h"
 
-int main() {
+int main() {.cph .gitattributes additionTest.txt calc infiniteNumberNode.c infiniteNumberNode.h main.c subtractTest.txt
     char ch;
     stack *stk = (stack *)malloc(sizeof(stack));
     queue *que = (queue *)malloc(sizeof(queue));
