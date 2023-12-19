@@ -8,16 +8,28 @@ int main() {
     initializeQueue(que);
     initializeStack(stk);
     char before = 'x';
+    int warning = 0;
     NumberListNode *nowNumberListNode = makeNumberListNode();
-    while ((ch = (char)getchar()) != EOF) {
+    while ((ch = (char)getchar()) != '\n') {
         if (ch == ' ' || ch == '\t' || ch == '\n') {
             continue;
-        } else if (ch >= '0' && ch <= '9') {
-            if (before == ')') {
-                stack_push_op(stk, que, MUL);
-            } else if (!(before >= '0' && before <= '9') && ch == '0') {
+        }
+        if (warning == 1) {
+            if (ch != '.') {
                 printf("error : leading zero!!\n");
                 exit(1);
+            } else {
+                warning = 0;
+            }
+        }
+        if (ch >= '0' && ch <= '9') {
+            if (before == ')') {
+                stack_push_op(stk, que, MUL);
+            } else if ((before == 'x' || before == '+' || before == '-' ||
+                        before == '*' || before == '/' || before == '(' ||
+                        before == ')') &&
+                       ch == '0') {
+                warning = 1;
             }
             NumberNode *temp = makeNumberNode();
             NumberList_push_back(nowNumberListNode->value, (int)(ch - '0'),

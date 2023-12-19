@@ -61,6 +61,17 @@ NumberListNode* makeNumberListNode() {
     return nowNode;
 }
 
+NumberListNode* copyNumberListNode(NumberListNode* val) {
+    NumberListNode* ret = makeNumberListNode();
+    NumberNode* now = val->value->head;
+    while (now != NULL) {
+        NumberNode* temp = makeNumberNode();
+        NumberList_push_back(ret->value, now->number, temp);
+        if (now->number == DOT) ret->value->dot = temp;
+        now = now->next;
+    }
+    return ret;
+}
 NumberList* makeNumberList() {
     NumberList* now = (NumberList*)malloc(sizeof(NumberList));
     mallocAssert(now);
@@ -86,7 +97,7 @@ void queue_push(queue* que, NumberListNode* nowNode) {
         que->qTail = nowNode;
     } else {
         que->qTail->next = nowNode;
-        if (nowNode->value->op==0 && nowNode->value->head == NULL) {
+        if (nowNode->value->op == 0 && nowNode->value->head == NULL) {
             printf("error : NULLList pushed in queue\n");
             exit(1);
         }
@@ -183,7 +194,7 @@ void print_NumberListNode(NumberListNode* nln) {
         exit(1);
     }
     if (nln->value->op == 0) {
-        if (nln->value->sig == -1)printf("-");
+        if (nln->value->sig == -1) printf("-");
         NumberNode* now = nln->value->head;
         while (now != NULL) {
             if (now->number == DOT) {
@@ -289,7 +300,8 @@ NumberListNode* add(NumberListNode* val1, NumberListNode* val2) {
     }
 
     while (ret->value->tail->number == 0 ||
-           ret->value->tail == ret->value->dot) {  // loop used to free zero value at ending of
+           ret->value->tail ==
+               ret->value->dot) {  // loop used to free zero value at ending of
                                    // calculate result(ret) ex) 123.45+123.35,
                                    // calculate result of this loop is 246.8
         NumberNode* temp = ret->value->tail;
@@ -420,7 +432,6 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
         NumberList_push_dot(ret->value);
     }
 
-
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
     return ret;
@@ -432,7 +443,61 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2) {
  */
 NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
+    ret->value->sig = val1->value->sig * val2->value->sig;
+    NumberNode* initializer = makeNumberNode();
+    NumberList_push_back(ret->value, 0, initializer);
+    initializer = makeNumberNode();
+    NumberList_push_back(ret->value, DOT, initializer);
+    ret->value->dot = initializer;
 
+    NumberListNode *sumOverDot[4], *sumUnderDot[4];
+    sumOverDot[0] = copyNumberListNode(val1);
+    for (int i = 1; i < 4; i++) {
+        NumberListNode *temp1, *temp2;
+        temp1 = copyNumberListNode(sumOverDot[i - 1]);
+        temp2 = copyNumberListNode(sumOverDot[i - 1]);
+        sumOverDot[i] = add(temp1, temp2);
+    }
+    NumberNode* now = val2->value->dot->prev;
+    while (now != NULL) {
+        for (int i = 0; i < 4; i++) {
+            if ((now->number) & (1 << i)) {
+                NumberListNode* temp = copyNumberListNode(sumOverDot[i]);
+                ret = add(ret, temp);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            product_by_10(sumOverDot[i]);
+        }
+        now = now->prev;
+    }
+
+    sumUnderDot[0] = copyNumberListNode(val1);
+    divide_by_10(sumUnderDot[0]);
+    for (int i = 1; i < 4; i++) {
+        NumberListNode *temp1, *temp2;
+        temp1 = copyNumberListNode(sumUnderDot[i - 1]);
+        temp2 = copyNumberListNode(sumUnderDot[i - 1]);
+        sumUnderDot[i] = add(temp1, temp2);
+    }
+    now = val2->value->dot->next;
+    while (now != NULL) {
+        for (int i = 0; i < 4; i++) {
+            if ((now->number) & (1 << i)) {
+                NumberListNode* temp = copyNumberListNode(sumUnderDot[i]);
+                ret = add(ret, temp);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            divide_by_10(sumUnderDot[i]);
+        }
+        now = now->next;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        NumberListNode_Clear(sumOverDot[i]);
+        NumberListNode_Clear(sumUnderDot[i]);
+    }
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
     return ret;
@@ -444,6 +509,25 @@ NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2) {
  */
 NumberListNode* divide(NumberListNode* val1, NumberListNode* val2) {
     NumberListNode* ret = makeNumberListNode();
+    ret->value->sig = val1->value->sig * val2->value->sig;
+    NumberNode* initializer = makeNumberNode();
+    NumberList_push_back(ret->value, 0, initializer);
+    initializer = makeNumberNode();
+    NumberList_push_back(ret->value, DOT, initializer);
+    ret->value->dot = initializer;
+
+    if (compareAbsoluteValue(ret, val2) == 0) {
+        printf("error : divide by 0\n");
+        exit(1);
+    }
+    NumberListNode* smallVal = copyNumberListNode(ret);
+    for (int i = 0; i < 1000; i++) {
+        NumberNode* temp = makeNumberNode();
+        if (i == 999)
+            NumberList_push_back(smallVal->value, 1, temp);
+        else
+            NumberList_push_back(smallVal->value, 0, temp);
+    }
 
     NumberListNode_Clear(val1);
     NumberListNode_Clear(val2);
@@ -499,20 +583,16 @@ int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
     return ret;
 }
 
-
-
 // for debug
 
 void print_stack_top(stack* s) {
     if (s->sTop == NULL) {
         printf("top of stack = NULL\n");
-    }
-    else {
+    } else {
         printf("top of stack = ");
         print_NumberListNode(s->sTop);
     }
 }
-
 
 void print_queue(queue* q) {
     printf("-----------------elements of queue-----------------\n");
@@ -522,4 +602,63 @@ void print_queue(queue* q) {
         now = now->next;
     }
     printf("------------------end--------------------------\n");
+}
+
+void divide_by_10(NumberListNode* val) {
+    NumberNode *pprev, *prev, *now, *next;
+    now = val->value->dot;
+    prev = val->value->dot->prev;
+    if (prev == val->value->head) {
+        NumberNode* temp = makeNumberNode();
+        NumberList_push_front(val->value, 0, temp);
+    }
+    pprev = val->value->dot->prev->prev;
+    next = val->value->dot->next;
+    if (next == NULL) {
+        prev->next = NULL;
+        prev->prev = now;
+        now->next = prev;
+        now->prev = pprev;
+        pprev->next = now;
+        val->value->tail = prev;
+    } else {
+        next->prev = prev;
+        prev->next = next;
+        prev->prev = now;
+        now->next = prev;
+        now->prev = pprev;
+        pprev->next = now;
+    }
+}
+void product_by_10(NumberListNode* val) {
+    NumberNode *prev, *now, *next, *nnext;
+    now = val->value->dot;
+    prev = val->value->dot->prev;
+    if (now == val->value->tail) {
+        NumberNode* temp = makeNumberNode();
+        temp->number = 0;
+        temp->prev = prev;
+        temp->next = now;
+        now->prev = temp;
+        prev->next = temp;
+    } else if (now->next == val->value->tail) {
+        next = now->next;
+
+        next->prev = prev;
+        prev->next = next;
+        next->next = now;
+        now->prev = next;
+        now->next = NULL;
+
+        val->value->tail = now;
+    } else {
+        next = now->next;
+        nnext = next->next;
+        prev->next = next;
+        next->prev = prev;
+        next->next = now;
+        now->prev = next;
+        now->next = nnext;
+        nnext->prev = now;
+    }
 }

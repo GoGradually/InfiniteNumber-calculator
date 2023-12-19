@@ -45,6 +45,7 @@ typedef struct __calStack {
 void NumberList_push_back(NumberList* nl, int val, NumberNode* now);
 void NumberList_push_front(NumberList* nl, int val, NumberNode* now);
 NumberListNode* makeNumberListNode();
+NumberListNode* copyNumberListNode(NumberListNode* val);
 NumberList* makeNumberList();
 NumberNode* makeNumberNode();
 void queue_push(queue* Q, NumberListNode* nowNode);
@@ -65,6 +66,8 @@ void initializeNumberListNode(NumberListNode* node);
 
 int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2);
 void divide_by_2(NumberListNode* val);
+void divide_by_10(NumberListNode* val);
+void product_by_10(NumberListNode* val);
 void NumberList_push_dot(NumberList* nl);
 
 NumberListNode* add(NumberListNode* val1, NumberListNode* val2);
@@ -72,7 +75,6 @@ NumberListNode* subtract(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* multiply(NumberListNode* val1, NumberListNode* val2);
 NumberListNode* divide(NumberListNode* val1, NumberListNode* val2);
 
-
-//for debug
+// for debug
 void print_stack_top(stack* s);
 void print_queue(queue* q);
