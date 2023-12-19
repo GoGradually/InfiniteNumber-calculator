@@ -579,10 +579,16 @@ int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
         i_current2 = i_current2->prev;
     }
     if (i_current1 == NULL && i_current2 != NULL) {
-        ret = -1;  // val1 < val2
+        while (i_current2 != NULL) {
+            if (0 < i_current2->number) ret = -1;
+            i_current2 = i_current2->prev;
+        }
     }
     if (i_current1 != NULL && i_current2 == NULL) {
-        ret = 1;  // val1 > val2
+        while (i_current1 != NULL) {
+            if (i_current1->number > 0) ret = 1;
+            i_current1 = i_current1->prev;
+        }
     }
     if (ret != 0) return ret;
 
@@ -598,10 +604,16 @@ int compareAbsoluteValue(NumberListNode* val1, NumberListNode* val2) {
     if (ret != 0) return ret;
 
     if (f_current1 == NULL && f_current2 != NULL) {
-        ret = -1;  // val1 < val2
+        while (f_current2 != NULL) {
+            if (0 < f_current2->number) ret = -1;
+            f_current2 = f_current2->next;
+        }
     }
     if (f_current1 != NULL && f_current2 == NULL) {
-        ret = 1;  // val1 > val2
+        while (f_current1 != NULL) {
+            if (f_current1->number > 0) ret = 1;
+            f_current1 = f_current1->next;
+        }
     }
     return ret;
 }
@@ -697,4 +709,31 @@ NumberListNode* divide_by_2(NumberListNode* val) {
     divide_by_10(val);
     ret = multiply(ret, val);
     return ret;
+}
+
+void delete_zero(NumberList* val) {
+    while (val->value->tail->number == 0 &&
+           val->value->tail != val->value->dot) {
+        NumberNode* temp = val->value->tail;
+        val->value->tail = val->value->tail->prev;
+        val->value->tail->next = NULL;
+        if (temp == val->value->dot) {
+            val->value->dot = NULL;
+            free(temp);
+            break;
+        }
+        free(temp);
+    }
+    while (val->value->tail->number == 0 &&
+           val->value->tail != val->value->dot) {
+        NumberNode* temp = ret->value->tail;
+        ret->value->tail = ret->value->tail->prev;
+        ret->value->tail->next = NULL;
+        if (temp == ret->value->dot) {
+            ret->value->dot = NULL;
+            free(temp);
+            break;
+        }
+        free(temp);
+    }
 }

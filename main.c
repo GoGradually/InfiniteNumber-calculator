@@ -83,6 +83,8 @@ int main() {
                 }
 
                 stack_push_op(stk, que, MUL);
+            } else if (before == ')') {
+                stack_push_op(stk, que, MUL);
             }
             stack_push_op(stk, que, OPEN_BRACKET);
         } else if (ch == ')') {
